@@ -28,6 +28,10 @@ db.ItemModel = sequelize.define('items', {
     entity: {
         type: Sequelize.STRING,
         field: 'entity'
+    },
+    logotipo: {
+        type: Sequelize.STRING,
+        field: 'logotipo'
     }
 });
 

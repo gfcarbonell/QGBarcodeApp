@@ -4,8 +4,10 @@ var router = express.Router();
 var db = require('../database/models/item-model');
 var util = require("../utils.js");
 var uid = require("uid");
+let node_uid = require('node-uid')
 var excelToJson = require('convert-excel-to-json');
-var axios = require('axios')
+var axios = require('axios');
+var path = require('path');
 /* GET listing. */
 router.get('/', function(req, res, next) {
     db.ItemModel
@@ -21,11 +23,25 @@ router.get('/', function(req, res, next) {
 
 /* POST listing. */
 router.post('/add', (req, res, next) => {
+    //Data
+    let data = JSON.parse(req.body.data);
+    //File Image
+    let extensionImage = req.files.file.name.split(".").pop();
+    let oldPathImage = req.files.file.path;
+    let newPathImage = `./files/images/${data.name}.${uid(10)}.${extensionImage}`;
+    moveFile(oldPathImage, newPathImage);
+    let newData = {
+        code:data.code, 
+        name:data.name,
+        area:data.area,
+        headquarter:data.headquarter,
+        entity:data.entity,
+        logotipo:newPathImage
+    }
     db.ItemModel
-    .create(req.body, {validate:true})
-    .then(newItem => {
-        console.log(`New item ${newItem.name}, with id ${newItem.id} has been created.`);
-        res.send(newItem);
+    .create(newData, {validate:true})
+    .then(response => {
+        console.log(`New item ${response.name}, with id ${response.id} has been created.`);
     })
     .catch(errors => {
         console.log(errors);
@@ -34,25 +50,15 @@ router.post('/add', (req, res, next) => {
 
 function moveFile(oldPath, newPath){
     fs.rename(oldPath, newPath, (err) => {
-        if(err) console.log(err);
+        if(err) {
+            console.log(err);
+            return false;
+        }
     });
+    return true;
 }
 
-router.post('/import', (req, res, next) => {
-    //Data
-    let data = JSON.parse(req.body.data);
-    //File Excel
-    let extensionExcel = req.files.dropzone.name.split(".").pop();
-    let oldPathExcel = req.files.dropzone.path;
-    let newPathExcel = `./files/excels/${data.code}.${extensionExcel}`
-    //File Image
-    let extensionImage = req.files.file.name.split(".").pop();
-    let oldPathImage = req.files.file.path;
-    let newPathImage = `./files/images/${data.code}.${extensionImage}`
-
-    moveFile(oldPathExcel, newPathExcel);
-    moveFile(oldPathImage, newPathImage);
-
+function setNewColumnKey(data){
     var objectArray = [];
     var newData = {};
     var letters = [data.code.letter, data.name.letter, data.area.letter];
@@ -73,42 +79,63 @@ router.post('/import', (req, res, next) => {
             newData[x] = objectArray[i][x];
         }
     }
+    return newData;
+}
+router.post('/import', (req, res, next) => {
+    //Data
+    let data = JSON.parse(req.body.data); 
     
-    //Excel to Json
-    const result = excelToJson({
-        sourceFile: newPathExcel,
-        sheets: [data.sheet],
-        header:{
-            rows: data.header
-        },
-        columnToKey: newData
-    });
-    console.log(result);
-    //Rename Keys Object result in array db
-    var keys = Object.keys(result[data.sheet][0]);
-    var database = [];
-    for (let i = 0; i < result[data.sheet].length; i++) {
-        database.push({
-            code:result[data.sheet][i][keys[0]],
-            name:result[data.sheet][i][keys[1]],
-            area:result[data.sheet][i][keys[2]],
-            headquarter:data.headquarter,
-            entity: data.entity
-          });
-    }
-    console.log(database);
-    const ROOT_URL = 'http://localhost:8080';
-    for (var i = 0; i < database.length; i++) {
-        axios.post(`${ROOT_URL}/items/add`, database[i])
+    //File Excel
+    let extensionExcel = req.files.dropzone.name.split(".").pop();
+    let oldPathExcel = req.files.dropzone.path;
+    let newPathExcel = `./files/excels/${node_uid(15)}.${extensionExcel}`
+    //File Image
+    let extensionImage = req.files.file.name.split(".").pop();
+    let oldPathImage = req.files.file.path;
+    let newPathImage = `./files/images/${node_uid(15)}.${extensionImage}`
+
+    if(moveFile(oldPathExcel, newPathExcel)===true){
+        moveFile(oldPathImage, newPathImage);
+        let newColumnKey = setNewColumnKey(data);
+        //Excel to Json
+        const result = excelToJson({
+            sourceFile: newPathExcel,
+            sheets: [data.sheet],
+            header:{
+                rows: data.header
+            },
+            columnToKey: newColumnKey
+        });
+    
+        //Rename Keys Object result in array db
+        var keys = Object.keys(result[data.sheet][0]);
+        var database = [];
+        for (let i = 0; i < result[data.sheet].length; i++) {
+            database.push({
+                code:result[data.sheet][i][keys[0]],
+                name:result[data.sheet][i][keys[1]],
+                area:result[data.sheet][i][keys[2]],
+                headquarter:data.headquarter,
+                entity: data.entity,
+                logotipo:newPathImage
+              });
+        }
+        delete result;
+        console.log("----------------------------");
+        console.log(database);
+        console.log(database.length);
+        console.log("----------------------------");
+        db.ItemModel
+        .bulkCreate(database, {validate:true})
         .then(response => {
-            console.log(`New Item: ${response}`);
+            console.log(`New items: ${response.length}.`);
         })
-        .catch(error => {
-            console.log(error);
+        .catch(errors => {
+            console.log(errors);
         });
     }
+   
     fs.unlinkSync(newPathExcel);
-    fs.unlinkSync(newPathImage);
 });
 /* PUSH listing. */
 router.put('/update/:id', (req, res, next) => {

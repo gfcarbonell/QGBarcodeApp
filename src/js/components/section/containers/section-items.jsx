@@ -74,25 +74,21 @@ class SectionItems extends React.Component {
                 console.log(error);
             });
     }
-    handleRemove = (event)=> {
-        
-        if (window.confirm("¿Estas seguro de eliminar este item?")) {
+    handleRemove = (event)=>{
+        if(window.confirm('¿Quieres eliminar este item?', 'Quality Global')){
             let id = event.target.getAttribute('id');
-            axios.delete('http://localhost:8080/items/remove/' + id);
-        } else {
-            console.log("Not eliminated");
+            let data =  this.state.data;
+            for(var i=0; i < data.length; i++){
+            if(data[i].id === parseInt(id)){
+                data.splice(i, 1);
+                axios.delete('http://localhost:8080/items/remove/' + id);
+            }
+            }
+            this.setState({data:data});
         }
     }
-
-    removeItem = id =>{
-        console.log(this.state.database);
-       //let database = this.state.database.filter(element => element.id !== id)
-       //this.props.setState({database:database});
-    } 
-
     handleSubmit = event => {
         event.preventDefault();
-        console.log(this.inputSearch.value, 'submit')
     }
     handleInputChange = event => {
         this.setState({
@@ -103,6 +99,16 @@ class SectionItems extends React.Component {
         if (event.key === 'Enter') {
             event.preventDefault();
         }
+    }
+    handleRemoveAll = (event)=> {
+        let data = this.state.data.map((item, index)=>{
+            return axios.delete('http://localhost:8080/items/remove/' + item.id);
+        })
+        this.setState({data:[]})
+        alert('Se ha eliminado todos los items', 'Quality Global');
+    }
+    setInputButtonRemove = event => {
+        this.inputButtonRemove =  event;
     }
     setInputSearchRef = element => {
         this.inputSearch = element;
@@ -152,6 +158,11 @@ class SectionItems extends React.Component {
                             <i className="material-icons left">search</i>
                             Buscar
                         </label>
+                    </div>
+                    <div className='input-field col s12 m12 l4'>
+                        <button onClick={this.handleRemoveAll} ref={this.setInputButtonRemove} className='btn'>
+                            Eliminar todo
+                        </button>
                     </div>
                 </div>
                 

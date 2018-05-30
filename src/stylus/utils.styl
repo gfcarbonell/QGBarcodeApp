@@ -110,7 +110,7 @@
     width 100%
     height 100%
 .printer 
-    height 60vh
+    height 76vh
     overflow hidden
     overflow-y auto
 #page-numbers
@@ -122,18 +122,27 @@
         margin .5em 0
 
 #divToPrint
-    background-color: 'white',
-    width: '210mm',
-    min-height: '297mm',
-    margin-left: '3mm',
-    margin-right: '3mm',    
-    margin-top:'3mm' 
+    background-color 'white'
+    width '210mm'
+    min-height '297mm'
+    margin-left '3mm'
+    margin-right '3mm'
+.barcode-section >svg {
+    margin: 0;
+    padding: 0;
+    height: 50px
+}
+.barcode-section >svg >{
+    margin: 0;
+    padding: 0;
+    width: 100%
+}
 .barcodes 
     display flex 
     flex-wrap wrap
 .barcode 
     box-sizing border-box
-    padding 1em
+    padding 3mm 0
     height 101px 
     width 33%
     font-weight bolder
@@ -148,7 +157,7 @@
         align-items center
         justify-content center
     &-title 
-        font-size 8.5px
+        font-size 8px
         margin 0 .5em
         font-weight bolder
     &-footer 

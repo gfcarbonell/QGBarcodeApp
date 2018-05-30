@@ -3,17 +3,20 @@ import Dropzone from 'react-dropzone';
 import $ from 'jquery';
 import 'materialize-css';
 import axios from 'axios';
-import Files from 'react-files';
+import  { Redirect } from 'react-router-dom';
+
 
 class SectionUploadFile extends React.Component{
-    
+    state = {
+        dropBool:false,
+        fileBool:false
+    }
     componentDidMount(){
         $('.tooltipped').tooltip();
     }
     setForm = element =>{
         this.form = element;
     }
-   
     setDropFile = element => {
         this.dropFile = element;
     }
@@ -51,9 +54,13 @@ class SectionUploadFile extends React.Component{
         this.headquarter = element;
     }
     
-    handleDropZone(accepted, rejected)
-    {  
-        console.log(accepted) 
+    handleDropZoneExcel(accepted, rejected)
+    {   
+        console.log(accepted);
+    }
+    handleDropZoneLogotipo(accepted, rejected)
+    {   
+        console.log(accepted);
     }
     handleSubmit = (event) => {
         event.preventDefault();
@@ -80,14 +87,14 @@ class SectionUploadFile extends React.Component{
         formData.set("data", JSON.stringify(data));
         formData.set("dropzone", this.dropFile.state.acceptedFiles[0]);
         formData.set("file", this.logotipo.state.acceptedFiles[0]);
-        //formData.set("file", file.state.files[0]);
         
         axios.post('http://localhost:8080/items/import', formData);
         //alert('Éxito al importar', 'Quality Global E.I.R.L.')
-        //this.form.reset();
+        this.form.reset();
+        
     }    
+    
     render(){
-        let dropzoneRef = null;
         let fileAccept = [
             'application/vnd.ms-excel',
             'application/msexcel',
@@ -104,6 +111,7 @@ class SectionUploadFile extends React.Component{
             "image/gif",
             "image/jpeg"
         ]
+
         return(
             <div>
                 <div className='row'>
@@ -118,7 +126,9 @@ class SectionUploadFile extends React.Component{
                                 className='dropzone grey lighten-2 border-gray-1' 
                                 accept={fileAccept.toString()}
                                 ref={this.setDropFile} 
-                                onDrop={this.handleDropZone}>
+                               
+                                onDrop={this.handleDropZoneExcel}>
+                               
                                 <p className='center-align'> 
                                     <i className="large material-icons">attach_file</i>
                                 </p>
@@ -191,8 +201,10 @@ class SectionUploadFile extends React.Component{
                                         <Dropzone 
                                             className='dropzone grey lighten-2 border-gray-1' 
                                             accept={imageAccept.toString()}
+                                            id='file'
+                                            
                                             ref={this.setLogotipo} 
-                                            onDrop={this.handleDropZone}
+                                            onDrop={this.handleDropZoneLogotipo}
                                             >
                                             <p className='center-align'> 
                                                 <i className=" material-icons medium">add_a_photo</i>
@@ -213,7 +225,7 @@ class SectionUploadFile extends React.Component{
                                 </div>
                             </div>
                             <div className='row'>
-                                <button className='btn waves-effect red right waves-light' type='submit' name='submit'>
+                                <button id='import' className='btn waves-effect red right waves-light' type='submit' name='submit'>
                                     Importar
                                     <i className='material-icons right'>send</i>
                                 </button>

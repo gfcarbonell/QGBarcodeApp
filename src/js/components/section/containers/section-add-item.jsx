@@ -1,6 +1,7 @@
 import React from 'react'
-import InputSimple from '../../widgets/items/input-simple';
 import axios from 'axios';
+import Dropzone from 'react-dropzone';
+
 
 class SectionAddItem extends React.Component{
     state = {
@@ -23,11 +24,13 @@ class SectionAddItem extends React.Component{
             headquarter:this.inputHeadquarter.value.toUpperCase(),
             entity:this.inputEntity.value.toUpperCase(),
         }
-        console.log(data);
-        axios.post('http://localhost:8080/items/add', data);
+        
+        var formData = new FormData();
+        formData.set("data", JSON.stringify(data));
+        formData.set("file", this.logotipo.state.acceptedFiles[0]);
+        axios.post('http://localhost:8080/items/add', formData);
         alert('Éxito al guardar', 'Quality Global E.I.R.L.')
         this.form.reset();
-        //this.setState({database:this.state.database.push(data)});
     }
     setForm = element =>{
         this.form = element;
@@ -47,7 +50,15 @@ class SectionAddItem extends React.Component{
     setInputName = element =>{
         this.inputName = element;
     }
+    setLogotipo = element =>{
+        this.logotipo = element;
+    }
     render(){
+        let imageAccept = [
+            "image/png",
+            "image/gif",
+            "image/jpeg"
+        ]
         return(
             <div>
                 <div>
@@ -55,25 +66,69 @@ class SectionAddItem extends React.Component{
                         Agregar items 
                     </h4>
                 </div>
-                <div className='col s12'>
+                <div className='col s12 margin-top-down-1'>
                     <form className='col s12' ref={this.setForm} method='post' onSubmit={this.handleSubmit}>
-                        <div className='row'>
-                            <InputSimple setRef={this.setInputEntity} label={'Entidad'} name={'entity'} validate={true}/>
+                        <div className="row">
+                            <div className="col s12 m12 l6">
+                                <legend><i className="material-icons left">business</i> Entidad:</legend>
+                                <div className="input-field col s12 m12 l12">
+                                    <input ref={this.setInputEntity} id="entity" required type="text" className="validate uppercase"/>
+                                </div>
+                            </div>
+                            <div className="col s12 m12 l6">
+                                <Dropzone 
+                                    className='dropzone grey lighten-2 border-gray-1' 
+                                    accept={imageAccept.toString()}
+                                    ref={this.setLogotipo} 
+                                    >
+                                    <p className='center-align'> 
+                                        <i className=" material-icons medium">add_a_photo</i>
+                                        
+                                    </p>
+                                    <p className='center-align'> 
+                                        Subir logotipo
+                                    </p>
+                                </Dropzone>
+                            </div> 
                         </div>
                         <div className='row'>
-                            <InputSimple setRef={this.setInputHeadquarter} label={'Sede'} name={'headquarter'} validate={true}/>
-                            <InputSimple setRef={this.setInputArea} label={'Área'} name={'area'} validate={true}/>
+                            <div className="col s12 m12 l6">
+                                <legend><i className="material-icons left">account_balance</i> Sede :</legend>
+                                <div className="input-field col s12 m12 l12">
+                                    <input ref={this.setInputHeadquarter} id='headquarter' required type="text" className="validate uppercase"/>
+                                    
+                                </div>
+                            </div>
+                            <div className="col s12 m12 l6">
+                                <legend> <i className="material-icons left">home</i> Área:</legend>
+                                <div className="input-field col s12 m12 l12">
+                                    <input ref={this.setInputArea}id="area" name='area' required type="text" className="validate uppercase"/>
+                                   
+                                </div>
+                            </div>
                         </div>
                         <div className='row'>
-                            <InputSimple setRef={this.setInputCode} type={'number'} label={'Código'} name={'code'} validate={true}/>
-                            <InputSimple setRef={this.setInputName}  label={'Nombre'} name={'name'} validate={true}/>
+                            <div className="col s12 m12 l6">
+                                    <legend> <i className="material-icons left">code</i>Código del item:</legend>
+                                    <div className="input-field col s12 m12 l12">
+                                        <input ref={this.setInputCode}id="code" name='code' required type="text" className="validate uppercase"/>
+                                       
+                                    </div>
+                            </div>
+                            <div className="col s12 m12 l6">
+                                <legend> <i className="material-icons left">developer_board</i>Nombre del item:</legend>
+                                <div className="input-field col s12 m12 l12">
+                                    <input ref={this.setInputName}id="name" name='name' required type="text" className="validate uppercase"/>
+                                    
+                                </div>
+                            </div>
                         </div>
                         <div className='row'>
                             <button className='btn waves-effect red right waves-light' type='submit' name='submit'>
                                 Guardar
                                 <i className='material-icons right'>send</i>
                             </button>
-                        </div>
+                        </div>   
                     </form>
                 </div>
             </div>
