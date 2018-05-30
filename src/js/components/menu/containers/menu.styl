@@ -1,0 +1,38 @@
+.main-panel 
+    min-height auto
+    margin 0
+    width 100%
+.menu
+    display flex 
+    flex-direction column
+    &-item 
+        display flex 
+        justify-content space-between 
+        align-items center
+        padding .25em 0
+        &-name 
+            width 70%
+            margin 0 auto
+
+@media (min-width: 576px)
+    .panel 
+        display flex 
+        justify-content center 
+        align-items center
+    .menu
+        
+        &-item
+            flex-direction column
+            &-image
+                width 100px
+                height 100px
+    .main-panel 
+        justify-content center 
+        align-items center
+        &-left 
+            border-right 2px solid #bdbdbd
+//@media (min-width: 1000px)
+//    .panel 
+//        height 100%
+//    .main-panel 
+//        height 576px
