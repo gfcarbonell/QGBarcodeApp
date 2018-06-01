@@ -109,10 +109,7 @@
     display block
     width 100%
     height 100%
-.printer 
-    height 76vh
-    overflow hidden
-    overflow-y auto
+
 #page-numbers
     display flex 
     justify-content center 
@@ -121,48 +118,60 @@
     >li
         margin .5em 0
 
-#divToPrint
-    background-color 'white'
-    width '210mm'
-    min-height '297mm'
-    margin-left '3mm'
-    margin-right '3mm'
+.printer 
+    overflow hidden 
+    height 70vh
+    width 100%
+    display flex 
+    justify-content center
+    overflow-y auto
+.divToPrint
+    background white
+    width 210mm
+    height 297mm
+    padding 8mm 7mm 14mm 7mm
 .barcode-section >svg {
     margin: 0;
     padding: 0;
-    height: 50px
+    height: 61px;
+    background: transparent
 }
-.barcode-section >svg >{
-    margin: 0;
-    padding: 0;
-    width: 100%
-}
-.barcodes 
+.barcodes {
     display flex 
     flex-wrap wrap
+    width 100% 
+    height 100%
+    justify-content space-between
+}
+
 .barcode 
     box-sizing border-box
-    padding 3mm 0
-    height 101px 
-    width 33%
+    min-width 63mm
+    margin 0 auto
     font-weight bolder
-    &-section 
-        display flex 
-        justify-content center
-        >svg
-            margin 0 
-            padding 0
-    &-header 
-        display flex 
-        align-items center
-        justify-content center
+    position relative
     &-title 
         font-size 8px
-        margin 0 .5em
-        font-weight bolder
+        margin 0 auto
+    &-header 
+        font-size 8px
+        height 6mm
+        display flex
+        justify-content center
+        align-items center
+        padding 0 5mm
+    &-section 
+        height 13mm
+        display flex 
+        justify-content center
+        &-avatar
+            position absolute
+            top 3.8mm
     &-footer 
-        font-size 8px 
-        font-weight bolder
+        z-index 0
+        font-size 8px
+        height 6mm
+    
 #file
     height 100px
 @media (min-width: 576px)
