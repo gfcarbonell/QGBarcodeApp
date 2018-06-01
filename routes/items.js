@@ -21,6 +21,22 @@ router.get('/', function(req, res, next) {
     });
 });
 
+/* GET listing. */
+router.get('/:id?', function(req, res, next) {
+    console.log(req.params);
+    db.ItemModel
+    .findOne({
+        where: {id: req.params.id},
+    })
+    .then((response) => {
+        console.log(`Data: ${response.dataValues}.`);
+        res.send(response);
+    })
+    .catch(errors => {
+        console.log(errors);
+    });
+});
+
 /* POST listing. */
 router.post('/add', (req, res, next) => {
     //Data
@@ -138,17 +154,59 @@ router.post('/import', (req, res, next) => {
     fs.unlinkSync(newPathExcel);
 });
 /* PUSH listing. */
-router.put('/update/:id', (req, res, next) => {
+router.put('/update/:id?', (req, res, next) => {
+    let data = JSON.parse(req.body.data);
+    console.log(req.body);
+    console.log(req.files);
+    let newData = {};
+    //File Image
+    if(req.files.file){
+        db.ItemModel
+        .findOne({
+            where: {id: data.id},
+        })
+        .then((response) => {
+            fs.unlinkSync(response.logotipo);
+        })
+        .catch(errors => {
+            console.log(errors);
+        });
+        
+        let extensionImage = req.files.file.name.split(".").pop();
+        let oldPathImage = req.files.file.path;
+        let newPathImage = `./files/images/${data.name}.${uid(10)}.${extensionImage}`;
+        moveFile(oldPathImage, newPathImage);
+        newData = {
+            id:data.id,
+            code:data.code, 
+            name:data.name,
+            area:data.area,
+            headquarter:data.headquarter,
+            entity:data.entity,
+            logotipo:newPathImage
+        }
+    }
+    else{
+        newData = {
+            id:data.id,
+            code:data.code, 
+            name:data.name,
+            area:data.area,
+            headquarter:data.headquarter,
+            entity:data.entity,
+        }
+    }
+    
     db.ItemModel
-    .update(req.body, {where: {
-        id: req.params.id
+    .update(newData, {where: {
+        id: newData.id
     }})
     .catch(errors => {
         console.log(errors);
     });
 })
 /* DELETE listing. */
-router.delete('/remove/:id', (req, res, next) => {
+router.delete('/remove/:id?', (req, res, next) => {
    
     console.log(req.params)
     console.log(req.body)

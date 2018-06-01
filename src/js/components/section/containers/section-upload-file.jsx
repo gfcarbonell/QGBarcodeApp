@@ -3,7 +3,6 @@ import Dropzone from 'react-dropzone';
 import $ from 'jquery';
 import 'materialize-css';
 import axios from 'axios';
-import  { Redirect } from 'react-router-dom';
 
 
 class SectionUploadFile extends React.Component{

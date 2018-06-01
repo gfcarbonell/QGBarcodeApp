@@ -4,17 +4,6 @@ import html2canvas from 'html2canvas';
 import axios from 'axios';
 var Barcode = require('react-barcode');
 
-//var BarcodeSimple = require('../../widgets/containers/barcode');
-
-//import ReactPaginate from 'react-paginate';
-/*
-const stylePrinter = {
-    backgroundColor: 'white',
-    width: '210mm',
-    minHeight: '297mm',
-    marginLeft: '3mm',
-    marginRight: '3mm', 
-}*/
 class SectionPDF extends React.Component {
     state = {
         //numPages: 1,
@@ -23,7 +12,7 @@ class SectionPDF extends React.Component {
         currentPage: 1,
         todosPerPage: 33
     }
-    componentDidMount(){
+    componentWillMount(){
         axios.get('http://localhost:8080/items')
             .then( (response) => {
                 console.log(response.data);
@@ -33,6 +22,7 @@ class SectionPDF extends React.Component {
                 console.log(error);
             });
     }
+ 
     handleClick = (event) => {
         this.setState({
           currentPage: Number(event.target.id)
@@ -60,7 +50,7 @@ class SectionPDF extends React.Component {
         const indexOfLastTodo = currentPage * todosPerPage;
         const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
         const currentTodos = database.slice(indexOfFirstTodo, indexOfLastTodo);
-
+        
         const renderTodos = currentTodos.map((item, index) => {
             return (
                 <div className='barcode' key={index}> 
@@ -75,7 +65,7 @@ class SectionPDF extends React.Component {
                     </div>
                     <div className='barcode-section font-weight-bolder uppercase'>
                         <figure className='barcode-section-avatar'>
-                            <Barcode className='font-weight-bolder' width={1.3} height={28} fontSize={11} value={item.code} />
+                            <Barcode className='font-weight-bolder' width={1.15} height={27} fontSize={11} value={item.code} />
                         </figure>
                     </div>
                     <div className='barcode-footer font-weight-bolder uppercase'>
@@ -110,7 +100,7 @@ class SectionPDF extends React.Component {
                     <a 
                         target='_blank' 
                         rel="noopener noreferrer" 
-                        className='waves-effect waves-light btn' 
+                        className='waves-effect waves-light btn margin-bottom-1' 
                         onClick={this.printDocument}>
                         Exportar PDF 
                     </a>

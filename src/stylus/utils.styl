@@ -34,6 +34,8 @@
     font-weight bolder
 .margin-simple
     margin .5em
+.margin-bottom-1
+    margin-bottom 1em
 .margin-top-down-1
     margin 1em 0
 .margin-top-down-2
@@ -129,7 +131,7 @@
     background white
     width 210mm
     height 297mm
-    padding 8mm 7mm 14mm 7mm
+    padding 10mm 0 10mm 0
 .barcode-section >svg {
     margin: 0;
     padding: 0;
@@ -139,7 +141,7 @@
 .barcodes {
     display flex 
     flex-wrap wrap
-    width 100% 
+    width 210mm
     height 100%
     justify-content space-between
 }
@@ -153,6 +155,8 @@
     &-title 
         font-size 8px
         margin 0 auto
+    &-image 
+        margin 0 .5em
     &-header 
         font-size 8px
         height 6mm
@@ -166,12 +170,12 @@
         justify-content center
         &-avatar
             position absolute
-            top 3.8mm
+            top 3.9mm
     &-footer 
         z-index 0
         font-size 8px
         height 6mm
-    
+ 
 #file
     height 100px
 @media (min-width: 576px)
