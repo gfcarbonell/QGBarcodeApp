@@ -171,7 +171,6 @@ router.put('/update/:id?', (req, res, next) => {
         .catch(errors => {
             console.log(errors);
         });
-        
         let extensionImage = req.files.file.name.split(".").pop();
         let oldPathImage = req.files.file.path;
         let newPathImage = `./files/images/${data.name}.${uid(10)}.${extensionImage}`;
