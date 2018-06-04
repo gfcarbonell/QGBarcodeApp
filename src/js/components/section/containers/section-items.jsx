@@ -119,7 +119,7 @@ class SectionItems extends React.Component {
         event.preventDefault();
         if(window.confirm('¿Estas seguro de actualizar?', 'Quality Global')){
             let id = parseInt(event.target.getAttribute('id'), 10);
-            const data = {
+            let data = {
                 id: id,
                 code:this.addZeroLeftChain(this.inputCode.value.toString(),13),
                 name:this.inputName.value.toUpperCase(),
@@ -128,10 +128,10 @@ class SectionItems extends React.Component {
                 entity:this.inputEntity.value.toUpperCase(),
             }
         
-            
+            data = JSON.stringify(data);
             if(this.logotipo.state.acceptedFiles[0]){
                 var formData = new FormData();
-                formData.set('data', JSON.stringify(data));
+                formData.set('data', data);
                 formData.set('file', this.logotipo.state.acceptedFiles[0]);
                 axios.put('http://localhost:8080/items/update/', formData, {
                     params:{
@@ -140,14 +140,13 @@ class SectionItems extends React.Component {
                 });
             }
             else{
-                axios.put('http://localhost:8080/items/update/', {
+                axios.put('http://localhost:8080/items/update/', {data:data}, {
                     params:{
                         id:id
                     },
-                    data:JSON.stringify(data)
                 });
             }
-            
+             
             alert('Éxito al actualizar', 'Quality Global E.I.R.L.');
             this.setState({ open: false });
         }

@@ -67,7 +67,7 @@ router.post('/add', (req, res, next) => {
 function moveFile(oldPath, newPath){
     fs.rename(oldPath, newPath, (err) => {
         if(err) {
-            console.log(err);
+            console.log('Error -> '+ err);
             return false;
         }
     });
@@ -100,18 +100,19 @@ function setNewColumnKey(data){
 router.post('/import', (req, res, next) => {
     //Data
     let data = JSON.parse(req.body.data); 
-    
     //File Excel
     let extensionExcel = req.files.dropzone.name.split(".").pop();
     let oldPathExcel = req.files.dropzone.path;
     let newPathExcel = `./files/excels/${node_uid(15)}.${extensionExcel}`
+    
     //File Image
     let extensionImage = req.files.file.name.split(".").pop();
     let oldPathImage = req.files.file.path;
-    let newPathImage = `./files/images/${node_uid(15)}.${extensionImage}`
+    let newPathImage = `./files/images/${node_uid(15)}.${extensionImage}`;
+    moveFile(oldPathImage, newPathImage);
 
     if(moveFile(oldPathExcel, newPathExcel)===true){
-        moveFile(oldPathImage, newPathImage);
+       
         let newColumnKey = setNewColumnKey(data);
         //Excel to Json
         const result = excelToJson({
@@ -122,7 +123,6 @@ router.post('/import', (req, res, next) => {
             },
             columnToKey: newColumnKey
         });
-    
         //Rename Keys Object result in array db
         var keys = Object.keys(result[data.sheet][0]);
         var database = [];
@@ -134,13 +134,9 @@ router.post('/import', (req, res, next) => {
                 headquarter:data.headquarter,
                 entity: data.entity,
                 logotipo:newPathImage
-              });
+            });
         }
         delete result;
-        console.log("----------------------------");
-        console.log(database);
-        console.log(database.length);
-        console.log("----------------------------");
         db.ItemModel
         .bulkCreate(database, {validate:true})
         .then(response => {
@@ -155,12 +151,11 @@ router.post('/import', (req, res, next) => {
 });
 /* PUSH listing. */
 router.put('/update/:id?', (req, res, next) => {
+    
     let data = JSON.parse(req.body.data);
-    console.log(req.body);
-    console.log(req.files);
     let newData = {};
-    //File Image
-    if(req.files.file){
+    
+    if (typeof req.files !== 'undefined'){
         db.ItemModel
         .findOne({
             where: {id: data.id},
@@ -175,27 +170,15 @@ router.put('/update/:id?', (req, res, next) => {
         let oldPathImage = req.files.file.path;
         let newPathImage = `./files/images/${data.name}.${uid(10)}.${extensionImage}`;
         moveFile(oldPathImage, newPathImage);
-        newData = {
-            id:data.id,
-            code:data.code, 
-            name:data.name,
-            area:data.area,
-            headquarter:data.headquarter,
-            entity:data.entity,
-            logotipo:newPathImage
-        }
+        newData.logotipo = newPathImage;
     }
-    else{
-        newData = {
-            id:data.id,
-            code:data.code, 
-            name:data.name,
-            area:data.area,
-            headquarter:data.headquarter,
-            entity:data.entity,
-        }
-    }
-    
+    newData.id=data.id;
+    newData.code=data.code;
+    newData.name=data.name;
+    newData.area=data.area;
+    newData.headquarter=data.headquarter;
+    newData.entity=data.entity;
+
     db.ItemModel
     .update(newData, {where: {
         id: newData.id
@@ -206,9 +189,6 @@ router.put('/update/:id?', (req, res, next) => {
 })
 /* DELETE listing. */
 router.delete('/remove/:id?', (req, res, next) => {
-   
-    console.log(req.params)
-    console.log(req.body)
     db.ItemModel.destroy({
         where: {
             id: req.params.id
