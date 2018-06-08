@@ -65,7 +65,7 @@ class SectionPDF extends React.Component {
                     </div>
                     <div className='barcode-section font-weight-bolder uppercase'>
                         <figure className='barcode-section-avatar'>
-                            <Barcode className='font-weight-bolder' width={1.15} height={27} fontSize={11} value={item.code} />
+                            <Barcode className='font-weight-bolder' width={1.15} height={24} fontSize={10.5} value={item.code} />
                         </figure>
                     </div>
                     <div className='barcode-footer font-weight-bolder uppercase'>
